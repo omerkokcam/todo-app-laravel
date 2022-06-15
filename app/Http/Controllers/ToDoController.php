@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Helpers\Helper;
 use App\Models\TodoList;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Yajra\DataTables\DataTables;
@@ -54,8 +55,26 @@ class ToDoController extends Controller
             })
             ->addColumn('button_update',function ($data){
                 return '<button class="btn btn-warning" data-toggle="tooltip" onClick="detail('.$data->id.')" title="İşi güncelle">Güncelle</button>';
+            })->editColumn('created_at', function ($data) {
+                if ($data->created_at) {
+                    $formatedDate = Carbon::createFromFormat('Y-m-d H:i:s', $data->created_at)
+                        ->format('d-m-Y // H:i:s');
+                    return $formatedDate;
+                } else {
+                    return null;
+                }
+
             })
-            ->rawColumns(['todo_item','is_done','button_delete','button_update'])->make(true);
+            ->editColumn('updated_at', function ($data) {
+                if ($data->updated_at) {
+                    $formatedDate = Carbon::createFromFormat('Y-m-d H:i:s', $data->updated_at)
+                        ->format('d-m-Y // H:i:s');
+                    return $formatedDate;
+                } else {
+                    return null;
+                }
+            })
+            ->rawColumns(['todo_item','is_done','button_delete','button_update','created_at','updated_at'])->make(true);
     }
 
     /**
